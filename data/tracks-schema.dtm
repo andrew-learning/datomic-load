@@ -1,0 +1,34 @@
+[
+ ;; tracks
+
+ {:db/id #db/id[:db.part/db]
+  :db/ident :track/title
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one}
+
+ {:db/id #db/id[:db.part/db]
+  :db/ident :track/artist
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one}
+
+ {:db/id #db/id[:db.part/db]
+  :db/ident :track/album
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one}
+
+ {:db/id #db/id[:db.part/db]
+  :db/ident :track/year
+  :db/valueType :db.type/long
+  :db/cardinality :db.cardinality/one}
+
+ {:db/id #db/id[:db.part/db]
+  :db/ident :track/genre-text
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one}
+
+ {:db/id #db/id[:db.part/db]
+  :db/ident :track/duration-secs
+  :db/valueType :db.type/long
+  :db/cardinality :db.cardinality/one}
+
+]
