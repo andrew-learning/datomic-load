@@ -37,10 +37,12 @@
 (defn migrate-tracks [mongo-url datomic-url]
   (mg/connect-via-uri! mongo-url)
   (let [conn (db-conn datomic-url)]
-    (map 
-      (fn [trk]
-        (->> 
-          (zipmap 
+    (->>
+      (read-tracks)
+      (map 
+        (fn [trk]
+          (->> 
+            (zipmap 
               [:track/title 
                :track/artist 
                :track/album 
@@ -48,16 +50,16 @@
                :track/genre-text 
                :track/duration-secs]
               ((juxt :title :artist :album #(-> %1 :year Integer/parseInt)  #(-> %1 :raw :genre-description) #(-> %1 :raw :rs-length Double/valueOf (int))) trk))
-          (remove (comp nil? second))
-          (into {:db/id #db/id[:db.part/user]})
-          ((fn [data-tx] @(d/transact conn [data-tx]))))) ; Need to process temp id's individually to prevent conflicts within txn
-      (read-tracks))))
+            (remove (comp nil? second)))))
+      ((fn [tracks] (map (fn [kv-pairs temp-id] (into {:db/id (d/tempid ":db.part/user" temp-id)} kv-pairs)) tracks (iterate dec -1))))
+      ((fn [data-tx] @(d/transact conn data-tx))))))
 
 (comment
 
   (migrate-tracks "mongodb://127.0.0.1/autoplay" "datomic:free://localhost:4334//tracks")
 
   (def conn (db-conn "datomic:free://localhost:4334//tracks"))
+  (load-schema conn)
   (def results (q '[:find ?n :where [?n :track/title]] (db conn)))
   (pprint results)
   (pprint (first results))
